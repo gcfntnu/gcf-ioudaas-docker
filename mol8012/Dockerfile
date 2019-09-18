@@ -1,4 +1,4 @@
-FROM quay.io/uninett/jupyterhub-singleuser:20190911-e0a7653
+FROM quay.io/uninett/jupyterhub-singleuser:20181130-e94981a
 
 USER root
 
@@ -7,6 +7,12 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     fonts-dejavu \
     tzdata \
+    libhdf5-dev \
+    liblzma-dev \
+    build-essential \
+    libcurl4-gnutls-dev \
+    libxml2-dev \
+    libssl-dev \
     gfortran \
     gcc && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -14,29 +20,10 @@ RUN apt-get update && \
 
 USER notebook
 
-RUN conda config --add channels defaults
-RUN conda config --add channels r
-RUN conda config --add channels bioconda
-RUN conda config --add channels conda-forge
-
 RUN conda install --quiet --yes \
     'r-base' \
-    'r-irkernel=0.8*' \
-    'r-plyr' \
-    'r-devtools' \
-    'r-tidyverse' \
-    'r-rsqlite' \
-    'r-reshape2' \
-    'r-rcurl' \
-    'r-crayon=' \
-    'r-htmltools=0.3*' \
-    'r-htmlwidgets=1.0*' \
-    'bioconductor-deseq2=1.18*' \
-    'bioconductor-apeglm' \
-    'r-wgcna' \
-    'r-ggplot2' \
-    'r-rcolorbrewer' \
-    'r-stringr' \
-    'r-data.table' && \
+    'r-biocmanager' && \
     conda clean -tipsy
+
+RUN R --slave -e "BiocManager::install(c('limma', 'edgeR', 'DESeq2', 'WGCNA', 'ggplot2', 'data.table', 'plyr', 'tidyverse', 'rcolorbrewer', 'apeglm'. 'crayon'))"
 
