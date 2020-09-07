@@ -1,4 +1,4 @@
-FROM quay.io/uninett/jupyterhub-singleuser:20181130-e94981a
+FROM quay.io/uninett/jupyterhub-singleuser:20200519-4d8716b
 
 USER root
 
@@ -18,12 +18,27 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
+RUN conda config --add channels defaults && \
+    conda config --add channels bioconda && \
+    conda config --add channels conda-forge
+    
 USER notebook
 
-RUN conda install --quiet --yes \
+RUN conda install -c conda-forge --yes mamba
+RUN mamba install --quiet --yes \
     'r-base' \
+    'r-tidyverse' \
+    'r-wgcna' \
+    'r-plyr' \
+    'r-rcolorbrewer' \
+    'r-data.table' \
+    'r-ggplot2' \
+    'bioconductor-deseq2' \
+    'bioconductor-apeglm' \
+    'bioconductor-limma' \
+    'bioconductor-edger' \
     'r-biocmanager' && \
-    conda clean -tipsy
+    mamba clean -ai
 
-RUN R --slave -e "BiocManager::install(c('limma', 'edgeR', 'DESeq2', 'WGCNA', 'ggplot2', 'data.table', 'plyr', 'tidyverse', 'rcolorbrewer', 'apeglm'. 'crayon'))"
+#RUN R --slave -e "BiocManager::install(c('foreign', 'limma', 'edgeR', 'DESeq2', 'WGCNA', 'ggplot2', 'data.table', 'plyr', 'tidyverse', 'RColorBrewer', 'apeglm', 'crayon'), ask=FALSE)"
 
