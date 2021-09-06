@@ -1,4 +1,4 @@
-FROM quay.io/uninett/jupyterhub-singleuser:20200519-4d8716b
+FROM quay.io/uninett/jupyterhub-singleuser:20210324-27d46e5
 
 USER root
 
